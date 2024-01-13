@@ -109,6 +109,7 @@ class LoadAnnotations(MMCV_LoadAnnotations):
             'Initialize dataset with `reduce_zero_label` as ' \
             f'{results["reduce_zero_label"]} but when load annotation ' \
             f'the `reduce_zero_label` is {self.reduce_zero_label}'
+
         if self.reduce_zero_label:
             # avoid using underflow conversion
             gt_semantic_seg[gt_semantic_seg == 0] = 255
