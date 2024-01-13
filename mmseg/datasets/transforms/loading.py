@@ -115,6 +115,7 @@ class LoadAnnotations(MMCV_LoadAnnotations):
             gt_semantic_seg[gt_semantic_seg == 0] = 255
             gt_semantic_seg = gt_semantic_seg - 1
             gt_semantic_seg[gt_semantic_seg == 254] = 255
+            # 类别是1的就变成0了，
         # modify if custom classes
         if results.get('label_map', None) is not None:
             # Add deep copy to solve bug of repeatedly
@@ -123,7 +124,9 @@ class LoadAnnotations(MMCV_LoadAnnotations):
             gt_semantic_seg_copy = gt_semantic_seg.copy()
             for old_id, new_id in results['label_map'].items():
                 gt_semantic_seg[gt_semantic_seg_copy == old_id] = new_id
+        gt_semantic_seg = gt_semantic_seg[:,:,0]
         results['gt_seg_map'] = gt_semantic_seg
+        # print(f"ycp seg_map.shape:{gt_semantic_seg.shape}")
         results['seg_fields'].append('gt_seg_map')
 
     def __repr__(self) -> str:

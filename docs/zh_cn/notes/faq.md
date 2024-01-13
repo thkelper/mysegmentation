@@ -90,7 +90,7 @@ decode_head=dict(
     type='PSPHead',
     in_channels=64,
     in_index=4,
-    num_classes=2,
+    num_classes=1,
     out_channels=1,
     loss_decode=dict(
         type='CrossEntropyLoss', use_sigmoid=True, loss_weight=1.0)),
@@ -98,7 +98,7 @@ auxiliary_head=dict(
     type='FCNHead',
     in_channels=128,
     in_index=3,
-    num_classes=2,
+    num_classes=1,
     out_channels=1,
     loss_decode=dict(
         type='CrossEntropyLoss', use_sigmoid=True, loss_weight=0.4)),

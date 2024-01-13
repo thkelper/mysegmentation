@@ -20,12 +20,12 @@ data_preprocessor = dict(
 data_root = '/home/yangchangpeng/wing_studio/data/col_dataset'
 dataset_type = 'CollagenSegDataset'
 default_hooks = dict(
-    checkpoint=dict(by_epoch=False, interval=500, type='CheckpointHook'),
-    logger=dict(interval=500, log_metric_by_epoch=False, type='LoggerHook'),
+    checkpoint=dict(by_epoch=False, interval=319, type='CheckpointHook'),
+    logger=dict(interval=319, log_metric_by_epoch=False, type='LoggerHook'),
     param_scheduler=dict(type='ParamSchedulerHook'),
     sampler_seed=dict(type='DistSamplerSeedHook'),
     timer=dict(type='IterTimerHook'),
-    visualization=dict(type='SegVisualizationHook'))
+    visualization=dict(draw=True, type='SegVisualizationHook'))
 default_scope = 'mmseg'
 env_cfg = dict(
     cudnn_benchmark=True,
@@ -36,7 +36,7 @@ img_scale = (
     512,
 )
 launcher = 'none'
-load_from = None
+load_from = 'ycp_test/iter_3190.pth'
 log_level = 'INFO'
 log_processor = dict(by_epoch=False)
 model = dict(
@@ -48,10 +48,11 @@ model = dict(
         in_channels=128,
         in_index=3,
         loss_decode=dict(
-            loss_weight=0.4, type='CrossEntropyLoss', use_sigmoid=False),
+            loss_weight=0.4, type='CrossEntropyLoss', use_sigmoid=True),
         norm_cfg=dict(requires_grad=True, type='SyncBN'),
         num_classes=2,
         num_convs=1,
+        out_channels=1,
         type='FCNHead'),
     backbone=dict(
         act_cfg=dict(type='ReLU'),
@@ -130,13 +131,20 @@ model = dict(
         in_channels=64,
         in_index=4,
         loss_decode=dict(
-            loss_weight=1.0, type='CrossEntropyLoss', use_sigmoid=False),
+            loss_weight=1.0, type='CrossEntropyLoss', use_sigmoid=True),
         norm_cfg=dict(requires_grad=True, type='SyncBN'),
-        num_classes=1,
+        num_classes=2,
         num_convs=1,
+        out_channels=1,
         type='FCNHead'),
     pretrained=None,
-    test_cfg=dict(crop_size=256, mode='slide', stride=170),
+    test_cfg=dict(crop_size=(
+        256,
+        256,
+    ), mode='slide', stride=(
+        170,
+        170,
+    )),
     train_cfg=dict(),
     type='EncoderDecoder')
 norm_cfg = dict(requires_grad=True, type='SyncBN')
@@ -171,6 +179,7 @@ test_dataloader = dict(
             dict(type='LoadAnnotations'),
             dict(type='PackSegInputs'),
         ],
+        seg_map_suffix='.png',
         type='CollagenSegDataset'),
     num_workers=1,
     persistent_workers=True,
@@ -189,7 +198,7 @@ test_pipeline = [
     dict(type='LoadAnnotations'),
     dict(type='PackSegInputs'),
 ]
-train_cfg = dict(max_iters=10000, type='IterBasedTrainLoop', val_interval=1000)
+train_cfg = dict(max_iters=3190, type='IterBasedTrainLoop', val_interval=319)
 train_dataloader = dict(
     batch_size=4,
     dataset=dict(
@@ -241,6 +250,7 @@ val_dataloader = dict(
             dict(type='LoadAnnotations'),
             dict(type='PackSegInputs'),
         ],
+        seg_map_suffix='.png',
         type='CollagenSegDataset'),
     num_workers=1,
     persistent_workers=True,
@@ -255,6 +265,7 @@ vis_backends = [
 ]
 visualizer = dict(
     name='visualizer',
+    save_dir='vis_ycp',
     type='SegLocalVisualizer',
     vis_backends=[
         dict(type='LocalVisBackend'),

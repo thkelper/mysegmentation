@@ -16,7 +16,7 @@ test_pipeline = [
     dict(type='LoadAnnotations'),
     # dict(type='LoadAnnotationsBinary', binary=True),
     dict(type='PackSegInputs')
-]
+] 
 train_dataloader = dict(
     batch_size=4,
     num_workers=1,
@@ -36,6 +36,7 @@ val_dataloader = dict(
     sampler=dict(type='DefaultSampler', shuffle=False),
     dataset=dict(
         type=dataset_type,
+        seg_map_suffix=".png",
         data_root=data_root,
         ann_file='val.txt',
         data_prefix=dict(img_path='img_dir/val', seg_map_path='ann_dir/val'),

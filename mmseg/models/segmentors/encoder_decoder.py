@@ -258,8 +258,10 @@ class EncoderDecoder(BaseSegmentor):
             Tensor: The segmentation results, seg_logits from model of each
                 input image.
         """
-
+        import pdb
+        # pdb.set_trace()
         h_stride, w_stride = self.test_cfg.stride
+        # pdb.set_trace()
         h_crop, w_crop = self.test_cfg.crop_size
         batch_size, _, h_img, w_img = inputs.size()
         out_channels = self.out_channels

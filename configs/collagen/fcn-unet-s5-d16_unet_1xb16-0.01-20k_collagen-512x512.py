@@ -12,7 +12,7 @@ optimizer = dict(lr=0.01)
 optim_wrapper = dict(optimizer=optimizer)
 model = dict(
     data_preprocessor=data_preprocessor,
-    decode_head=dict(num_classes=1),)
+    decode_head=dict(num_classes=2),)
 
 # learning policy
 param_scheduler = [
@@ -24,11 +24,12 @@ param_scheduler = [
         end=1000,
         by_epoch=False)
 ]
-# training schedule for 20k
-train_cfg = dict(type='IterBasedTrainLoop', max_iters=10000, val_interval=1000)
+# training schedule for 10 epochs
+train_cfg = dict(type='IterBasedTrainLoop', max_iters=3190, val_interval=319)
 default_hooks = dict(
-    logger=dict(type='LoggerHook', interval=500, log_metric_by_epoch=False),
-    checkpoint=dict(type='CheckpointHook', by_epoch=False, interval=500))
+    logger=dict(type='LoggerHook', interval=319, log_metric_by_epoch=False),
+    checkpoint=dict(type='CheckpointHook', by_epoch=False, interval=319))
+
 
 
 work_dir="./ycp_test"

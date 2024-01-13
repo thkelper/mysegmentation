@@ -14,7 +14,7 @@ class CollagenSegDataset(BaseSegDataset):
         img_suffix (str): Suffix of images. Default: '.png'
         seg_map_suffix (str): Suffix of segmentation maps. Default: '.png'
     """
-    METAINFO = dict(classes=('collagen'))
+    METAINFO = dict(classes=('medium', 'collagen'), palette=[[0, 0, 0], [0, 0, 255]])
 
     def __init__(self,
                  img_suffix='.bmp',

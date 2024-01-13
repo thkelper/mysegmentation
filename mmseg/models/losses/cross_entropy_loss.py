@@ -39,7 +39,8 @@ def cross_entropy(pred,
             only averaged over non-ignored targets. Default: False.
             `New in version 0.23.0.`
     """
-
+    # import pdb
+    # pdb.set_trace()
     # class_weight is a manual rescaling weight given to each class.
     # If given, has to be a Tensor of size C element-wise losses
     loss = F.cross_entropy(
@@ -136,6 +137,8 @@ def binary_cross_entropy(pred,
         # As the ignore_index often set as 255, so the
         # binary class label check should mask out
         # ignore_index
+        # import pdb
+        # pdb.set_trace()
         assert label[label != ignore_index].max() <= 1, \
             'For pred with shape [N, 1, H, W], its label must have at ' \
             'most 2 classes'

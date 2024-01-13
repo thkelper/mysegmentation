@@ -77,6 +77,10 @@ class PackSegInputs(BaseTransform):
             if len(results['gt_seg_map'].shape) == 2:
                 data = to_tensor(results['gt_seg_map'][None,
                                                        ...].astype(np.int64))
+            elif len(results['gt_seg_map'].shape == 3):
+                assert results['gt_seg_map'].shape[2] == 3, "Check your Mask!!!"
+                assert (results['gt_seg_map'][:,:,0] == results['gt_seg_map'][:,:,1]) and (results['gt_seg_map'][:,:,0] == results['gt_seg_map'][:,:,2]), "Your mask is contaminated!"
+                results['gt_seg_map'] = results['gt_seg_map'][:,:,0]
             else:
                 warnings.warn('Please pay attention your ground truth '
                               'segmentation map, usually the segmentation '
