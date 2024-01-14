@@ -69,6 +69,8 @@ class SegDataPreProcessor(BaseDataPreprocessor):
         super().__init__()
         self.size = size
         self.size_divisor = size_divisor
+        # import pdb
+        # pdb.set_trace()
         self.pad_val = pad_val
         self.seg_pad_val = seg_pad_val
 
@@ -120,6 +122,8 @@ class SegDataPreProcessor(BaseDataPreprocessor):
         if training:
             assert data_samples is not None, ('During training, ',
                                               '`data_samples` must be define.')
+            # import pdb
+            # pdb.set_trace()
             inputs, data_samples = stack_batch(
                 inputs=inputs,
                 data_samples=data_samples,
@@ -132,6 +136,8 @@ class SegDataPreProcessor(BaseDataPreprocessor):
                 inputs, data_samples = self.batch_augments(
                     inputs, data_samples)
         else:
+            # import pdb
+            # pdb.set_trace()
             img_size = inputs[0].shape[1:]
             assert all(input_.shape[1:] == img_size for input_ in inputs),  \
                 'The image size in a batch should be the same.'

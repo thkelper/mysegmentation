@@ -6,11 +6,12 @@ num_classes=2
 out_channels=1
 use_sigmoid=True
 work_dir = "./results/psanet"
+dataset_type = 'CollagenSegDataset'
+data_root = '/home/yangchangpeng/wing_studio/data/col_dataset'
 #######################################################################
 #                      PART 2  Dataset & Dataloader                   #
 #######################################################################
-dataset_type = 'CollagenSegDataset'
-data_root = '/home/yangchangpeng/wing_studio/data/col_dataset'
+
 img_scale = (512, 512)
 train_pipeline = [
     dict(type='LoadImageFromFile'),
