@@ -35,7 +35,7 @@ def main():
     # test a single image
     result = inference_model(model, args.img)
     # show the results
-    show_result_pyplot(
+    mask = show_result_pyplot(
         model,
         args.img,
         result,
@@ -45,6 +45,7 @@ def main():
         draw_gt=False,
         show=False if args.out_file is not None else True,
         out_file=args.out_file)
+    
 
 
 if __name__ == '__main__':

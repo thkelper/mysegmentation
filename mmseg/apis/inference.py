@@ -15,7 +15,7 @@ from mmseg.models import BaseSegmentor
 from mmseg.registry import MODELS
 from mmseg.structures import SegDataSample
 from mmseg.utils import SampleList, dataset_aliases, get_classes, get_palette
-from mmseg.visualization import SegLocalVisualizer
+from mmseg.visualization import SegMaskVisualizer
 from .utils import ImageType, _preprare_data
 
 
@@ -167,7 +167,7 @@ def show_result_pyplot(model: BaseSegmentor,
     if save_dir is not None:
         mkdir_or_exist(save_dir)
     # init visualizer
-    visualizer = SegLocalVisualizer(
+    visualizer = SegMaskVisualizer(
         vis_backends=[dict(type='LocalVisBackend')],
         save_dir=save_dir,
         alpha=opacity)
