@@ -27,7 +27,9 @@ def infer(cfgs):
         # out_path = osp.join(cfgs.infer_dir, mask_fname)
         mask_path = img_path.replace(cfgs.img_dir, cfgs.infer_dir)
         mask_dir = osp.dirname(mask_path)
+        
         os.makedirs(mask_dir, exist_ok=True)    
+        mask_path = mask_path.replace(cfgs.IMG_EXT, cfgs.INFER_EXT)
         mask = result.pred_sem_seg.cpu().data.numpy()
         mask = np.transpose(np.repeat(mask, 3, axis=0), (1, 2, 0))
         mask[mask==1] = 255
@@ -81,7 +83,7 @@ def read_txt(fpath):
 
 def parse_args():
     parser = ArgumentParser(description="胶原凝胶或者琼脂糖图像推理分析")
-    parser.add_argument('--config', type=str, help="所有通用配置文件" )
+    parser.add_argument('--config', required=True, type=str, help="所有通用配置文件" )
     parser.add_argument(
         '--device', default='cuda:0', help='Device used for inference')
     args = parser.parse_args()
@@ -99,10 +101,10 @@ def main():
     if cfgs.infer:
         infer(cfgs)
 
-    if cfgs.start_idx <= 2 and cfgs.end_idx >= 2:
+    if cfgs.start_idx <= 1 and cfgs.end_idx >= 1:
         save_txt_with_medicines(cfgs, cfgs.root_dir, cfgs.medicines)
 
-    if cfgs.start_idx <= 3 and cfgs.end_idx >= 3:
+    if cfgs.start_idx <= 2 and cfgs.end_idx >= 2:
         rm_not_valid_imgs_plot(cfgs, cfgs.root_dir, all_medicines=cfgs.medicines, valid_thresh=cfgs.valid_thresh, verbose=cfgs.verbose)
 
     
