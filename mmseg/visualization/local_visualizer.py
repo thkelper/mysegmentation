@@ -135,9 +135,15 @@ class SegMaskVisualizer(Visualizer):
 
         colors = [palette[label] for label in labels]
 
-        mask = np.zeros_like(image, dtype=np.uint8)
+        single_mask = np.zeros(image.shape[:2], dtype=np.uint8)
+        
         for label, color in zip(labels, colors):
-            mask[sem_seg[0] == label, :] = color
+                single_mask[sem_seg[0] == label] = color
+        import pdb
+        pdb.set_trace()
+        mask = np.zeros_like(image)
+        for c in range(mask.shape[-1]):
+            mask[:,:,c] = single_mask
 
         if with_labels:
             font = cv2.FONT_HERSHEY_SIMPLEX
@@ -323,10 +329,16 @@ class SegMaskVisualizer(Visualizer):
                                             'visualizing semantic ' \
                                             'segmentation results.'
                 pred_img_data = self._draw_sem_seg(image,
-                                                   data_sample.pred_sem_seg,
-                                                   classes, palette,
-                                                   with_labels)
-
+                                        data_sample.pred_sem_seg,
+                                        classes, palette,
+                                        with_labels)
+                # pred_img_data = data_sample.pred_sem_seg
+                # pred_img_data = np.expand_dims(pred_img_data, -1).repeat(3, axis=-1)
+                # pred_img_data = pred_img_data[:,:,np.newaxis]
+                # pred_img_data = np.expand_dims(pred_img_data, axis=-1)
+                # import pdb
+                # pdb.set_trace()
+            # pred_img_data = np.tile(pred_img_data, (1,1,3))
             if 'pred_depth_map' in data_sample:
                 pred_img_data = pred_img_data if pred_img_data is not None \
                     else image
@@ -657,11 +669,11 @@ class SegLocalVisualizer(Visualizer):
                                             'not provided when ' \
                                             'visualizing semantic ' \
                                             'segmentation results.'
-                # pred_img_data = self._draw_sem_seg(image,
-                #                                    data_sample.pred_sem_seg,
-                #                                    classes, palette,
-                #                                    with_labels)
-                pred_img_data = data_sample.pred_sem_seg
+                pred_img_data = self._draw_sem_seg(image,
+                                                   data_sample.pred_sem_seg,
+                                                   classes, palette,
+                                                   with_labels)
+                
             if 'pred_depth_map' in data_sample:
                 pred_img_data = pred_img_data if pred_img_data is not None \
                     else image

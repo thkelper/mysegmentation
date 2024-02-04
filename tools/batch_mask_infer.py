@@ -1,6 +1,8 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
 import os.path as osp
+import cv2
+import numpy as np
 from argparse import ArgumentParser
 
 from mmengine.model import revert_sync_batchnorm
@@ -35,7 +37,7 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-def main():
+def infer():
     
     args = parse_args()
     # build the model from a config file and a checkpoint file
@@ -50,17 +52,24 @@ def main():
         img_title = osp.splitext(img_fname)[0]
         mask_fname = img_fname.replace(args.img_ext, args.mask_ext)
         out_path = osp.join(args.tar_dir, mask_fname)
+        mask = result.pred_sem_seg.cpu().data.numpy()
+        mask = np.transpose(np.repeat(mask, 3, axis=0), (1, 2, 0))
+        mask[mask==1] = 255
+        # import pdb
+        # pdb.set_trace()
+        cv2.imwrite(out_path, mask)
+        
     # show the results
-        mask = show_result_pyplot(
-            model,
-            img_path,
-            result,
-            title=img_title,
-            opacity=args.opacity,
-            with_labels=args.with_labels,
-            draw_gt=False,
-            show=False if out_path is not None else True,
-            out_file=out_path)
+        # mask = show_result_pyplot(
+        #     model,
+        #     img_path,
+        #     result,
+        #     title=img_title,
+        #     opacity=args.opacity,
+        #     with_labels=args.with_labels,
+        #     draw_gt=False,
+        #     show=False if out_path is not None else True,
+        #     out_file=out_path)
 
 if __name__ == '__main__':
-    main()
+    infer()
