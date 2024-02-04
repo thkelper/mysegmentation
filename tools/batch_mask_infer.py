@@ -37,9 +37,7 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-def infer():
-    
-    args = parse_args()
+def infer(args):
     # build the model from a config file and a checkpoint file
     model = init_model(args.config, args.checkpoint, device=args.device)
     if args.device == 'cpu':
@@ -70,6 +68,9 @@ def infer():
         #     draw_gt=False,
         #     show=False if out_path is not None else True,
         #     out_file=out_path)
+def main():
+    args = parse_args()
+    infer(args)
 
 if __name__ == '__main__':
     infer()

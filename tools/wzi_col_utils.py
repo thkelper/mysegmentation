@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
-
-
 import os 
 import os.path as osp
 import cv2 as cv
@@ -14,14 +11,6 @@ import cv2
 from glob import glob
 import re
 from tabulate import tabulate
-
-
-# In[3]:
-
-
-
-
-# In[4]:
 
 
 def save_fname_txt(cfgs, src_dir, save_dir=None, save_fname="all_info.txt", with_mask=False, save=True, ret=False):
