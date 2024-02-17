@@ -1,21 +1,22 @@
-_base_ = [
-    './models/fcn_hr18.py', './datasets/collagen_512x512.py',
-    './default_runtime.py', './schedules/schedule_6380.py'
-]
-
 #######################################################################
 #                        PART 1 Modified Settings                     #
 #######################################################################
-crop_size = (512, 1024)
+lr = 0.01
+crop_size = (512, 512)
 num_classes=2
 out_channels=1
 use_sigmoid=True
-work_dir = "./results/hrnet_wandb"
+work_dir = "./results/single_cell/psanet"
+dataset_type = 'CollagenSegDataset'
+data_root = '/home/yangchangpeng/wing_studio/data/'
+batch_size = 8
+num_workers = 4
+img_suffix = ".tif"
+seg_map_suffix = ".png"
 #######################################################################
 #                      PART 2  Dataset & Dataloader                   #
 #######################################################################
-dataset_type = 'CollagenSegDataset'
-data_root = '/home/yangchangpeng/wing_studio/data/collagen_data/col_train_dataset/'
+
 img_scale = (512, 512)
 train_pipeline = [
     dict(type='LoadImageFromFile'),
@@ -34,28 +35,34 @@ test_pipeline = [
     dict(type='PackSegInputs')
 ] 
 train_dataloader = dict(
-    batch_size=4,
-    num_workers=1,
+    # batch_size=4,
+    batch_size=batch_size,
+    # num_workers=1,
+    num_workers=num_workers,
     persistent_workers=True,
     sampler=dict(type='InfiniteSampler', shuffle=True),
     dataset=dict(
         type=dataset_type,
-        seg_map_suffix=".png",
+        img_suffix=img_suffix,
+        seg_map_suffix=seg_map_suffix,
         data_root=data_root,
-        ann_file='train.txt',
-        data_prefix=dict(img_path='img_dir/train/', seg_map_path='ann_dir/train/'),
+        ann_file='20240201_ASMC_single_cell/train.txt',
+        data_prefix=dict(img_path='20240201_ASMC_single_cell/', seg_map_path='20240201_ASMC_single_cell/'),
         pipeline=train_pipeline))
 val_dataloader = dict(
-    batch_size=1,
-    num_workers=1,
+    # batch_size=1,
+    batch_size=batch_size,
+    # num_workers=1,
+    num_workers=num_workers,
     persistent_workers=True,
     sampler=dict(type='DefaultSampler', shuffle=False),
     dataset=dict(
         type=dataset_type,
-        seg_map_suffix=".png",
+        img_suffix=img_suffix,
+        seg_map_suffix=seg_map_suffix,
         data_root=data_root,
-        ann_file='val.txt',
-        data_prefix=dict(img_path='img_dir/val', seg_map_path='ann_dir/val'),
+        ann_file='20240201_ASMC_single_cell/val.txt',
+        data_prefix=dict(img_path='20240201_ASMC_single_cell/', seg_map_path='20240201_ASMC_single_cell/'),
         pipeline=test_pipeline))
 test_dataloader = val_dataloader
 val_evaluator = dict(type='IoUMetric', iou_metrics=['mIoU', 'mDice'])
@@ -64,20 +71,72 @@ test_evaluator = dict(type='IoUMetric', iou_metrics=['mIoU', 'mDice'])
 #######################################################################
 #                             PART 3  Model                           #
 #######################################################################
-crop_size = (512, 1024)
-data_preprocessor = dict(size=crop_size)
-model = dict(data_preprocessor=data_preprocessor,
-            decode_head=dict(
-                num_classes=num_classes,
-                out_channels=out_channels,
-                loss_decode=dict(
-                type='CrossEntropyLoss', use_sigmoid=use_sigmoid, loss_weight=1.0))
-            )
+norm_cfg = dict(type='SyncBN', requires_grad=True)
+data_preprocessor = dict(
+    type='SegDataPreProcessor',
+    size=crop_size,
+    mean=[123.675, 116.28, 103.53],
+    std=[58.395, 57.12, 57.375],
+    bgr_to_rgb=True,
+    pad_val=0,
+    seg_pad_val=255)
+
+model = dict(
+    type='EncoderDecoder',
+    data_preprocessor=data_preprocessor,
+    pretrained='open-mmlab://resnet50_v1c',
+    backbone=dict(
+        type='ResNetV1c',
+        depth=50,
+        num_stages=4,
+        out_indices=(0, 1, 2, 3),
+        dilations=(1, 1, 2, 4),
+        strides=(1, 2, 1, 1),
+        norm_cfg=norm_cfg,
+        norm_eval=False,
+        style='pytorch',
+        contract_dilation=True),
+    decode_head=dict(
+        type='PSAHead',
+        in_channels=2048,
+        in_index=3,
+        channels=512,
+        mask_size=(97, 97),
+        psa_type='bi-direction',
+        compact=False,
+        shrink_factor=2,
+        normalization_factor=1.0,
+        psa_softmax=True,
+        dropout_ratio=0.1,
+        num_classes=num_classes,
+        out_channels=out_channels,
+        norm_cfg=norm_cfg,
+        align_corners=False,
+        loss_decode=dict(
+            type='CrossEntropyLoss', use_sigmoid=use_sigmoid, loss_weight=1.0)),
+    auxiliary_head=dict(
+        type='FCNHead',
+        in_channels=1024,
+        in_index=2,
+        channels=256,
+        num_convs=1,
+        concat_input=False,
+        dropout_ratio=0.1,
+        num_classes=num_classes,
+        out_channels=out_channels,
+        norm_cfg=norm_cfg,
+        align_corners=False,
+        loss_decode=dict(
+            type='CrossEntropyLoss', use_sigmoid=use_sigmoid, loss_weight=0.4)),
+    # model training and testing settings
+    train_cfg=dict(),
+    test_cfg=dict(mode='whole'))
+
 #######################################################################
 #                    PART 4  Scheduler & Optimizer                    #
 #######################################################################
 # optimizer
-optimizer = dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0005)
+optimizer = dict(type='SGD', lr=lr, momentum=0.9, weight_decay=0.0005)
 optim_wrapper = dict(type='OptimWrapper', optimizer=optimizer, clip_grad=None)
 # learning policy
 param_scheduler = [

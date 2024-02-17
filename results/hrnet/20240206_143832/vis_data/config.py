@@ -21,7 +21,7 @@ data_preprocessor = dict(
         57.375,
     ],
     type='SegDataPreProcessor')
-data_root = '/home/yangchangpeng/wing_studio/data/collagen_data/col_train_dataset'
+data_root = '/home/yangchangpeng/wing_studio/data/col_train_dataset'
 dataset_type = 'CollagenSegDataset'
 default_hooks = dict(
     checkpoint=dict(
@@ -171,8 +171,7 @@ test_dataloader = dict(
     dataset=dict(
         ann_file='val.txt',
         data_prefix=dict(img_path='img_dir/val', seg_map_path='ann_dir/val'),
-        data_root=
-        '/home/yangchangpeng/wing_studio/data/collagen_data/col_train_dataset',
+        data_root='/home/yangchangpeng/wing_studio/data/col_dataset',
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(keep_ratio=False, scale=(
@@ -208,8 +207,7 @@ train_dataloader = dict(
         ann_file='train.txt',
         data_prefix=dict(
             img_path='img_dir/train/', seg_map_path='ann_dir/train/'),
-        data_root=
-        '/home/yangchangpeng/wing_studio/data/collagen_data/col_train_dataset',
+        data_root='/home/yangchangpeng/wing_studio/data/col_dataset',
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(type='LoadAnnotations'),
@@ -245,8 +243,7 @@ val_dataloader = dict(
     dataset=dict(
         ann_file='val.txt',
         data_prefix=dict(img_path='img_dir/val', seg_map_path='ann_dir/val'),
-        data_root=
-        '/home/yangchangpeng/wing_studio/data/collagen_data/col_train_dataset',
+        data_root='/home/yangchangpeng/wing_studio/data/col_dataset',
         pipeline=[
             dict(type='LoadImageFromFile'),
             dict(keep_ratio=False, scale=(

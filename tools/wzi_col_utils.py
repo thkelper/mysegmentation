@@ -11,12 +11,13 @@ import cv2
 from glob import glob
 import re
 from tabulate import tabulate
+from utils import get_fpath_list
 
 
 def save_fname_txt(cfgs, src_dir, save_dir=None, save_fname="all_info.txt", with_mask=False, save=True, ret=False):
     assert osp.isdir(src_dir), "Must input the dir of images."
     
-    all_img_info_list = list()
+    
     for root, dirs, files in os.walk(src_dir):
         for file in files:
             if file.startswith("._"): continue
@@ -29,6 +30,8 @@ def save_fname_txt(cfgs, src_dir, save_dir=None, save_fname="all_info.txt", with
                     all_img_info_list.append(img_path + " " + mask_path + "\n")
                 else:
                     all_img_info_list.append(img_path + "\n")
+            elif file.endswith(cfgs.MASK_EXT):
+                mask_abs_path = osp.join(root, )
     if not save_dir:
         txt_save_path = osp.join(src_dir, save_fname)
     else:
@@ -44,8 +47,11 @@ def save_fname_txt(cfgs, src_dir, save_dir=None, save_fname="all_info.txt", with
 
 
 def save_txt_with_medicines(cfgs, cur_work_dir, all_medicines, save_fname_EXT="all_info.txt", verbose=False):
+    # import pdb
+    # pdb.set_trace()
+    all_img_info_list = get_fpath_list(cur_work_dir, recursive=True, valid_ext=cfgs.MASK_EXT)
     for medicine in all_medicines:
-        medicine_list = sorted([item for item in save_fname_txt(cfgs, cur_work_dir, save_dir=cur_work_dir, save=False, ret=True) if re.search(medicine, item)])
+        medicine_list = sorted([item.replace(cur_work_dir, ".") + "\n" for item in all_img_info_list if re.search(medicine, item)])
         medicine_txt_fpath = osp.join(cur_work_dir, medicine + '_' + save_fname_EXT)
         with open(medicine_txt_fpath, "w") as fb:
             fb.writelines(medicine_list)
@@ -176,7 +182,9 @@ def rm_not_valid_imgs_plot(cfgs, work_dir, all_medicines=None, save_fname_EXT="a
             time = v['time'].to_list()
             print(time)
             # time = sorted(time, key=lambda date: float(date[:-1]))
-            time = sorted(time, key=lambda data: float(data[1:]))
+            # import pdb
+            # pdb.set_trace()
+            time = sorted(time, key=lambda data: float(data[:-1]))
             area = v['area'].to_list()
             fname2area[fname] = area
 

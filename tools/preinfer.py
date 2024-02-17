@@ -102,10 +102,10 @@ def main():
         infer(cfgs)
 
     if cfgs.start_idx <= 1 and cfgs.end_idx >= 1:
-        save_txt_with_medicines(cfgs, cfgs.root_dir, cfgs.medicines)
+        save_txt_with_medicines(cfgs, cfgs.infer_dir, cfgs.medicines)
 
     if cfgs.start_idx <= 2 and cfgs.end_idx >= 2:
-        rm_not_valid_imgs_plot(cfgs, cfgs.root_dir, all_medicines=cfgs.medicines, valid_thresh=cfgs.valid_thresh, verbose=cfgs.verbose)
+        rm_not_valid_imgs_plot(cfgs, cfgs.infer_dir, all_medicines=cfgs.medicines, valid_thresh=cfgs.valid_thresh, verbose=cfgs.verbose)
 
     
 
