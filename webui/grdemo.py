@@ -1,6 +1,6 @@
 import gradio as gr
 from mmengine.logging import MMLogger
-from .utils import infer
+from utils import infer
 import torch
 
 logger = MMLogger('mmdetection', logger_name='mmdet')
@@ -26,64 +26,51 @@ def get_free_device():
     return gpus[select]
 
 
-class ColSegTab:
-    model_list = [
-        'retinanet_r50-caffe_fpn_1x_coco',
-        'faster-rcnn_r50-caffe_fpn_1x_coco',
-        'dino-5scale_swin-l_8xb2-12e_coco.py',
-    ]
+image = gr.Image(label="Image", type="filepath", interactive=True) 
+output = gr.Image(label='Result', interactive=False, elem_classes='result')
 
-    def __init__(self) -> None:
-        self.create_ui()
+demo = gr.Interface(
+    fn = infer,
+    inputs = ["text", "text", image],
+    outputs = output
+)
 
-    def create_ui(self):
-        with gr.Row():
-            with gr.Column():
-                select_model = gr.Dropdown(
-                    label='Choose a model',
-                    elem_id='od_models',
-                    elem_classes='select_model',
-                    choices=self.model_list,
-                    value=self.model_list[0],
-                )
-            with gr.Column():
-                image_input = gr.Image(
-                    label='Image',
-                    source='upload',
-                    elem_classes='input_image',
-                    type='filepath',
-                    interactive=True,
-                    tool='editor',
-                )
-                output = gr.Image(
-                    label='Result',
-                    source='upload',
-                    interactive=False,
-                    elem_classes='result',
-                )
-                run_button = gr.Button(
-                    'Run',
-                    elem_classes='run_button',
-                )
-                run_button.click(
-                    self.inference,
-                    inputs=[select_model, image_input],
-                    outputs=output,
-                )
+if __name__ == "__main__":
+    demo.launch()
 
+# # class ColSegTab:
+# #     def __init__(self) -> None:
+# #         self.create_ui()
 
-    def inference(self, model, image):
-        det_inferencer = infer(
-            model, scope='mmdet', device=get_free_device())
-        results_dict = det_inferencer(image, return_vis=True, no_save_vis=True)
-        vis = results_dict['visualization'][0]
-        return vis
+# #     def create_ui(self):
+# #         with gr.Row():
+# #             with gr.Column():
+# #                 image_input = gr.Image(
+# #                     label='Image',
+# #                     elem_classes='input_image',
+# #                     type='filepath',
+# #                     interactive=True,
+# #                 )
+# #                 output = gr.Image(
+# #                     label='Result',
+# #                     interactive=False,
+# #                     elem_classes='result',
+# #                 )
+# #                 run_button = gr.Button(
+# #                     'Run',
+# #                     elem_classes='run_button',
+# #                 )
+# #                 run_button.click(
+# #                     self.inference,
+# #                     inputs=["text", "text", image_input],
+# #                     outputs=output,
+# #                 )
 
 
 if __name__ == '__main__':
     title = 'Cell Mechanics Lab'
 
-    DESCRIPTION = '''# <div align="center">MMDetection Inference Demo  </div>
+    DESCRIPTION = '''# <div align="center">High-throughput Drug Screen System</div>
     <div align="center">
     <img src="https://user-images.githubusercontent.com/45811724/190993591-
     bd3f1f11-1c30-4b93-b5f4-05c9ff64ff7f.gif" width="50%"/>
@@ -100,11 +87,12 @@ if __name__ == '__main__':
     its corresponding grounding mask.
     '''
 
-    with gr.Blocks(analytics_enabled=False, title=title) as demo:
-        gr.Markdown(DESCRIPTION)
-        with gr.Tabs():
-            with gr.TabItem('Detection'):
-                ColSegTab()
+#     with gr.Blocks(analytics_enabled=False, title=title) as demo:
+#         gr.Markdown(DESCRIPTION)
+#         with gr.Tabs():
+#             with gr.TabItem('Col Segmentation'):
+#                 ColSegTab()
+    
 
 
-    demo.queue().launch(share=True)
+#     demo.launch(share=True)
