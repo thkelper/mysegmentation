@@ -29,42 +29,7 @@ def get_free_device():
 image = gr.Image(label="Image", type="filepath", interactive=True) 
 output = gr.Image(label='Result', interactive=False, elem_classes='result')
 
-demo = gr.Interface(
-    fn = infer,
-    inputs = ["text", "text", image],
-    outputs = output
-)
 
-if __name__ == "__main__":
-    demo.launch()
-
-# # class ColSegTab:
-# #     def __init__(self) -> None:
-# #         self.create_ui()
-
-# #     def create_ui(self):
-# #         with gr.Row():
-# #             with gr.Column():
-# #                 image_input = gr.Image(
-# #                     label='Image',
-# #                     elem_classes='input_image',
-# #                     type='filepath',
-# #                     interactive=True,
-# #                 )
-# #                 output = gr.Image(
-# #                     label='Result',
-# #                     interactive=False,
-# #                     elem_classes='result',
-# #                 )
-# #                 run_button = gr.Button(
-# #                     'Run',
-# #                     elem_classes='run_button',
-# #                 )
-# #                 run_button.click(
-# #                     self.inference,
-# #                     inputs=["text", "text", image_input],
-# #                     outputs=output,
-# #                 )
 
 
 if __name__ == '__main__':
@@ -76,17 +41,15 @@ if __name__ == '__main__':
     bd3f1f11-1c30-4b93-b5f4-05c9ff64ff7f.gif" width="50%"/>
     </div>
 
-    #### This is an official demo for MMDet. \n
-
-    - The first time running requires downloading the weights,
-    please wait a moment. \n
-    - OV is mean Open Vocabulary \n
-    - Refer Seg is mean Referring Expression Segmentation \n
-    - In Text-Image Region Retrieval, you need to provide n images and
-    a query text, and the model will predict the most matching image and
-    its corresponding grounding mask.
     '''
-
+    demo = gr.Interface(
+    fn = infer,
+    inputs = ["text", "text", image],
+    outputs = output,
+    title=title
+)
+    gr.Markdown(DESCRIPTION)
+    demo.launch()
 #     with gr.Blocks(analytics_enabled=False, title=title) as demo:
 #         gr.Markdown(DESCRIPTION)
 #         with gr.Tabs():
