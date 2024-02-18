@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 import os
 import os.path as osp
-from wzi_col_utils import (save_txt_with_medicines, rm_not_valid_imgs_plot)
+from .wzi_col_utils import (save_txt_with_medicines, rm_not_valid_imgs_plot)
 from mmengine import Config
 
 from mmengine.model import revert_sync_batchnorm
@@ -10,6 +10,7 @@ from mmseg.apis import inference_model, init_model
 import numpy as np
 import cv2
 from utils import get_fpath_list
+import torch
 
 def infer(cfgs):
     # build the model from a config file and a checkpoint file
@@ -85,14 +86,14 @@ def parse_args():
     parser = ArgumentParser(description="胶原凝胶或者琼脂糖图像推理分析")
     parser.add_argument('--config', required=True, type=str, help="所有通用配置文件" )
     parser.add_argument(
-        '--device', default='cuda:0', help='Device used for inference')
+        '--device', default='0', help='Device used for inference')
     args = parser.parse_args()
     return args
 
 def main():
     args = parse_args()
     cfgs = Config.fromfile(args.config)
-    cfgs.device = args.device
+    cfgs.device = torch.device(f"cuda:{cfgs.device}") if torch.cuda.is_available else 'cpu'
     os.makedirs(cfgs.infer_dir, exist_ok=True)
     # 产生工作目录下所有文件的txt
     # if cfgs.start_idx <= 0 and cfgs.end_idx >= 0:
@@ -110,11 +111,4 @@ def main():
     
 
 if __name__ == "__main__":
-    # root_dir = "/mnt/disk1/data/mouse_det/month3"
-    # root_dir = "/mnt/disk1/data/mouse_det/0329_11am_cell800k_col1.0"
-    # root_dir = "/mnt/d/ycp/pku/unet++/input/anti_cancer_phase"
-    # root_dir = "/mnt/d/ycp/pku/unet++/input/anti_cancer_phase/0628_48well"
-    
     main()
-    # ann_file_path = osp.join(root_dir, "ann_info.txt")
-    # test_list = read_txt(ann_file_path)

@@ -218,3 +218,4 @@ def rm_not_valid_imgs_plot(cfgs, work_dir, all_medicines=None, save_fname_EXT="a
     img_fname = osp.join(work_dir, assay_name + ".jpg")
     plt.savefig(img_fname)
     medicine_mean_std_res.to_excel(osp.join(work_dir, assay_name + ".xlsx"))
+    return img_fname

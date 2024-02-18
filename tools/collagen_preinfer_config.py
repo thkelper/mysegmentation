@@ -1,7 +1,7 @@
 import os.path as osp
 
-# infer = True
-infer = False
+infer = True
+# infer = False
 
 # data_root_dir = "/home/yangchangpeng/wing_studio/data/col_dataset"
 data_root_dir = "/home/yangchangpeng/wing_studio/data/collagen_data"
